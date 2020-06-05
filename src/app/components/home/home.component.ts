@@ -12,9 +12,60 @@ export class HomeComponent implements OnInit {
   totalActive = 0;
   totalDeaths = 0;
   totalRecovered = 0;
+  loading = true;
   globalData: GlobalDataSummary[];
+  datatable = [];
+
+  chart = {
+    PieChart: 'PieChart',
+    ColumnChart: 'ColumnChart',
+    height: 500,
+    options: {
+      animation: {
+        duration: 1000,
+        easing: 'out',
+      },
+      is3D: true,
+    },
+  };
+
   constructor(private dataService: DataServiceService) {}
 
+  updateChart(input: HTMLInputElement) {
+    console.log(input.value);
+    this.initChart(input.value);
+  }
+
+  initChart(caseType: string) {
+    this.datatable = [];
+    //this.datatable.push(['Países', 'Casos']);
+
+    this.globalData.forEach((element) => {
+      let value: number;
+      if (caseType === 'c') {
+        if (element.confirmed > 5000) {
+          value = element.confirmed;
+        }
+      }
+      if (caseType === 'a') {
+        if (element.confirmed > 5000) {
+          value = element.active;
+        }
+      }
+      if (caseType === 'm') {
+        if (element.confirmed > 5000) {
+          value = element.deaths;
+        }
+      }
+      if (caseType === 'r') {
+        if (element.confirmed > 5000) {
+          value = element.recovered;
+        }
+      }
+
+      this.datatable.push([element.country, value]);
+    });
+  }
   ngOnInit(): void {
     this.dataService.getGlobalData().subscribe({
       next: (result) => {
@@ -32,6 +83,11 @@ export class HomeComponent implements OnInit {
         this.totalConfirmed = this.numberWithCommas(this.totalConfirmed);
         this.totalDeaths = this.numberWithCommas(this.totalDeaths);
         this.totalRecovered = this.numberWithCommas(this.totalRecovered);
+
+        this.initChart('c');
+      },
+      complete: () => {
+        this.loading = false;
       },
     });
   }
