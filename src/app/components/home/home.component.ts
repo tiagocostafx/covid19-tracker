@@ -63,7 +63,11 @@ export class HomeComponent implements OnInit {
         }
       }
 
-      this.datatable.push([element.country, value]);
+      if (value > 20000) {
+        this.datatable.push([element.country, value]);
+
+        console.log(this.datatable);
+      }
     });
   }
   ngOnInit(): void {
